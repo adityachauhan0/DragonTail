@@ -20,10 +20,10 @@
 <p align="center">DragonTail is not made by Tailscale.</p>
 
 <p align="center">
-  <img src="docs/demo.gif" alt="DragonTail: onboarding, a live desktop, Taildrop, and a ping" width="2032">
+  <img src="docs/demo.gif" alt="DragonTail: the tailnet, a live desktop, and the terminal" width="1920">
 </p>
 
-<p align="center">Onboarding, a live desktop, Taildrop, and a ping.</p>
+<p align="center">The tailnet, a live desktop, and the terminal.</p>
 
 ## Download
 
