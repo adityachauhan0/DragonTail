@@ -1,0 +1,1 @@
+DragonTail is a Mac app to set up VNC on your Tailscale network. The VNC viewer is included. This Mac needs Tailscale, logged in. The other computer needs to be on that tailnet, with a VNC server listening on a port. https://github.com/adityachauhan0/DragonTail

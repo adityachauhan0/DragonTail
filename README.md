@@ -7,7 +7,7 @@
 
 <h1 align="center">DragonTail</h1>
 
-<p align="center">A Mac app for the computers on your Tailscale network, with a terminal and a remote desktop.</p>
+<p align="center">DragonTail is a Mac app to set up VNC on your Tailscale network. The viewer is included. This Mac needs Tailscale, logged in. The other computer needs to be on that tailnet, with a VNC server listening on a port.</p>
 
 <p align="center">
   <a href="https://github.com/adityachauhan0/DragonTail/releases/download/v0.1.0/DragonTail_0.1.0_aarch64.dmg"><strong>Download for Mac</strong></a>
@@ -38,6 +38,12 @@ The disk image is ad-hoc signed. If macOS blocks the app, right-click it and cho
 - Tailscale is installed on this Mac, and you are logged in.
 - The computer you want to view is on that tailnet, with a VNC server listening on a port.
 - DragonTail includes the viewer, and draws the desktop in the app.
+
+## Set up VNC on Tailscale
+
+1. Log in to Tailscale on this Mac.
+2. Open DragonTail.
+3. Open the computer whose VNC port is already listening.
 
 ## What you can do
 
