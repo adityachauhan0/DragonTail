@@ -1,40 +1,64 @@
-# DragonTail
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="ui/public/dragontail-logo-dark.svg">
+    <img src="ui/public/dragontail-logo-transparent.svg" alt="DragonTail" width="128">
+  </picture>
+</p>
 
-DragonTail is a macOS app for the computers on your Tailscale tailnet. It lists devices, pings them, sends files with Taildrop, opens an SSH terminal, and shows a remote desktop through an SSH tunnel.
+<h1 align="center">DragonTail</h1>
 
-DragonTail is an independent client. It is not affiliated with Tailscale. The project site is [dragontail.site](https://dragontail.site).
+<p align="center">A Mac app for the computers on your Tailscale network, with a terminal and a remote desktop.</p>
 
-## What it does
+<p align="center">
+  <a href="https://github.com/adityachauhan0/DragonTail/releases/download/v0.1.0/DragonTail_0.1.0_aarch64.dmg"><strong>Download for Mac</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://dragontail.site">Site</a>
+  &nbsp;·&nbsp;
+  <a href="LICENSE">MIT</a>
+</p>
 
-- Shows the live tailnet from `tailscale status`
-- Pings a peer and runs a network check on this Mac
-- Sends a file with `tailscale file cp`
-- Opens a real SSH session in the window, using the `ssh` on this Mac
-- Connects to a VNC server on a peer, through an SSH tunnel, and draws it with noVNC
+<p align="center">DragonTail is not made by Tailscale.</p>
 
-A peer needs Tailscale, and a desktop session needs a VNC server already running on that computer.
+<p align="center">
+  <img src="docs/demo.gif" alt="DragonTail: onboarding, a live desktop, Taildrop, and a ping" width="760">
+</p>
 
-## Requirements
+<p align="center">Onboarding, a live desktop, Taildrop, and a ping.</p>
 
-The 0.1.0 build is for Apple silicon Macs. Tailscale needs to be installed and logged in.
+## Download
 
-To build from source you also need Node.js, npm, and Rust.
+DragonTail 0.1.0 is an Apple silicon build.
 
-## Develop
+[DragonTail_0.1.0_aarch64.dmg](https://github.com/adityachauhan0/DragonTail/releases/download/v0.1.0/DragonTail_0.1.0_aarch64.dmg)
+
+Tailscale needs to be installed and logged in. The disk image is ad-hoc signed. If macOS blocks the app, right-click it and choose Open, or allow it in System Settings → Privacy & Security.
+
+## What you can do
+
+- See the computers on your tailnet
+- Ping a computer and send it a file with Taildrop
+- Open an SSH session with the `ssh` already on this Mac
+- Open a remote desktop through an SSH tunnel
+
+## Before you open it
+
+This release is for Apple silicon Macs. A desktop session needs a VNC server already running on that computer. Passwords stay out of the app unless you save them.
+
+## Build
+
+Node.js, npm, and Rust are required.
 
 ```bash
 npm install
 npm run tauri dev
 ```
 
-## Build
-
 ```bash
 npm run tauri build
 ```
 
-The macOS app and disk image are written under `target/release/bundle/`.
+The app and the disk image are written under `target/release/bundle/`.
 
 ## License
 
-[MIT](LICENSE). Commit Mono, used for the terminal, is under the SIL Open Font License in `ui/public/fonts/OFL.txt`.
+[MIT](LICENSE). Commit Mono, the terminal face, is under the SIL Open Font License in [`ui/public/fonts/OFL.txt`](ui/public/fonts/OFL.txt).
