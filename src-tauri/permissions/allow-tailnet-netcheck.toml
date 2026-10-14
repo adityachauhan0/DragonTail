@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-tailnet-netcheck"
+description = "Enables the tailnet_netcheck command."
+commands.allow = ["tailnet_netcheck"]

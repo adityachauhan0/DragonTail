@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-vnc-bridge-open"
+description = "Enables the vnc_bridge_open command."
+commands.allow = ["vnc_bridge_open"]

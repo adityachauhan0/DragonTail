@@ -1,0 +1,45 @@
+[package]
+name = "dragontail"
+version = "0.1.0"
+description = "DragonTail"
+authors = ["Aditya Chauhan"]
+edition = "2021"
+license = "MIT"
+rust-version = "1.90"
+
+[lints.clippy]
+all = "deny"
+unwrap_used = "deny"
+
+[lib]
+name = "dragontail_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+tauri-plugin-dialog = "2.8.2"
+tauri-plugin-window-state = "2.5.0"
+tauri-plugin-single-instance = "2.5.3"
+tslocal = "1.1"
+portable-pty = "0.9.0"
+tokio = { version = "1", features = ["net", "rt", "io-util", "sync", "macros", "time"] }
+tokio-tungstenite = "0.26"
+futures-util = "0.3"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+block2 = "0.6"
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", features = ["NSEvent", "NSWindow", "NSView", "NSResponder", "block2"] }
+
+[dev-dependencies]
+tempfile = "3"
+ts-rs = "10"
+tslocal = "1.1"
+

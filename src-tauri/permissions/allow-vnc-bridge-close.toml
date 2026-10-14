@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-vnc-bridge-close"
+description = "Enables the vnc_bridge_close command."
+commands.allow = ["vnc_bridge_close"]

@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-vnc-argv"
+description = "Enables the vnc_argv command."
+commands.allow = ["vnc_argv"]

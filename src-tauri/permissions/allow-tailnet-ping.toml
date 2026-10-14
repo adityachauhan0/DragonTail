@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-tailnet-ping"
+description = "Enables the tailnet_ping command."
+commands.allow = ["tailnet_ping"]

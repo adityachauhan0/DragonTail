@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desktop</title>
+  <style>
+    @font-face { font-family: Inter; font-style: normal; font-weight: 400 600; font-display: swap; src: url("fonts/inter-latin.woff2") format("woff2"); }
+    :root { color-scheme: light dark; --bg:oklch(10% 0 0); --surface:oklch(17% 0 0); --fg:oklch(97% 0 0); --muted:oklch(70.8% 0 0); --border:oklch(32% 0 0); --accent:oklch(0.5772 0.2324 260); --accent-on:#fff; --accent-hover:oklch(48.8% 0.243 264.376); font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-weight: 400; letter-spacing: -0.01em; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; height:100%; overflow:hidden; background:#000; color:var(--fg); }
+    #screen { position:absolute; inset:0; background:#000; }
+    #status { margin:0; padding:24px; color:var(--muted); }
+    #hoverZone { position:absolute; top:0; left:0; right:0; height:8px; z-index:5; background:color-mix(in srgb, var(--fg) 28%, transparent); }
+    #dock { position:absolute; top:12px; left:50%; z-index:6; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px; max-width:calc(100% - 24px); padding:6px; border:1px solid var(--border); border-radius:10px; background:var(--surface); box-shadow:0 8px 24px rgb(0 0 0 / 35%); transform:translate(-50%, -140%); opacity:0; pointer-events:none; transition:transform 160ms ease, opacity 160ms ease; }
+    #dock.is-open, #dock:focus-within { transform:translate(-50%, 0); opacity:1; pointer-events:auto; }
+    button { min-height:36px; padding:0 12px 1px; border:1px solid var(--border); border-radius:8px; background:var(--surface); color:var(--fg); font:inherit; font-size:14px; font-weight:500; letter-spacing:normal; cursor:pointer; }
+    button[aria-pressed="true"] { border-color:var(--accent-hover); background:var(--accent); color:var(--accent-on); }
+    #clipBox { display:flex; gap:6px; flex:1 1 220px; min-width:180px; }
+    #clipBox[hidden] { display:none; }
+    textarea { flex:1; min-height:32px; max-height:72px; padding:6px 8px; border:1px solid var(--border); border-radius:6px; background:var(--bg); color:var(--fg); font:inherit; font-size:13px; resize:vertical; }
+  </style>
+</head>
+<body>
+  <div id="screen"><p id="status">Connecting…</p></div>
+  <div id="hoverZone"></div>
+  <div id="dock" role="toolbar" aria-label="Viewer controls">
+    <button id="scale" type="button" aria-pressed="false">Scale to fit</button>
+    <button id="viewOnly" type="button" aria-pressed="false">View only</button>
+    <button id="remoteResize" type="button" aria-pressed="false">Remote resize</button>
+    <button id="clip" type="button" aria-pressed="false">Clipboard</button>
+    <button id="cad" type="button" hidden>Ctrl+Alt+Del</button>
+    <div id="clipBox" hidden>
+      <textarea id="clipText" aria-label="Text sent to the remote clipboard"></textarea>
+      <button id="clipSend" type="button">Send</button>
+    </div>
+  </div>
+  <script type="module">
+    import RFB from '@novnc/novnc';
+    import { emit, listen } from '@tauri-apps/api/event';
+
+    const params = new URLSearchParams(location.search);
+    const port = params.get('port');
+    const name = params.get('name') || 'Desktop';
+    document.title = `${name} · ${params.get('w') || ''} × ${params.get('h') || ''}`;
+    const screen = document.getElementById('screen');
+    const status = document.getElementById('status');
+    const dock = document.getElementById('dock');
+    const hoverZone = document.getElementById('hoverZone');
+    const scaleButton = document.getElementById('scale');
+    const viewOnlyButton = document.getElementById('viewOnly');
+    const resizeButton = document.getElementById('remoteResize');
+    const cad = document.getElementById('cad');
+    cad.hidden = params.get('cad') !== '1';
+    let scale = params.get('scale') === '1';
+    let viewOnly = params.get('viewOnly') === '1';
+    let remoteResize = params.get('remoteResize') === '1';
+    let sendClipboard = params.get('clip') !== '0';
+    scaleButton.setAttribute('aria-pressed', String(scale));
+    viewOnlyButton.setAttribute('aria-pressed', String(viewOnly));
+    resizeButton.setAttribute('aria-pressed', String(remoteResize));
+    let rfb = null;
+    let connected = false;
+    let attempts = 0;
+
+    function fit() {
+      if (!rfb) return;
+      rfb.scaleViewport = scale;
+      rfb.resizeSession = remoteResize;
+      rfb.viewOnly = viewOnly;
+    }
+    function publish() {
+      emit('desktop-control', { scale, viewOnly, remoteResize, sendClipboard }).catch(() => {});
+    }
+    function applyOptions(options) {
+      if (!options) return;
+      if (typeof options.scale === 'boolean') {
+        scale = options.scale;
+        scaleButton.setAttribute('aria-pressed', String(scale));
+      }
+      if (typeof options.viewOnly === 'boolean') {
+        viewOnly = options.viewOnly;
+        viewOnlyButton.setAttribute('aria-pressed', String(viewOnly));
+      }
+      if (typeof options.remoteResize === 'boolean') {
+        remoteResize = options.remoteResize;
+        resizeButton.setAttribute('aria-pressed', String(remoteResize));
+      }
+      if (typeof options.sendClipboard === 'boolean') sendClipboard = options.sendClipboard;
+      if (Number.isInteger(options.qualityLevel) && rfb) rfb.qualityLevel = options.qualityLevel;
+      if (options.customCompressLevel && rfb) rfb.compressionLevel = options.compressLevel;
+      fit();
+    }
+    function connect() {
+      if (!port || connected) return;
+      attempts += 1;
+      const note = document.createElement('p');
+      note.id = 'status';
+      note.textContent = 'Connecting…';
+      screen.replaceChildren(note);
+      try {
+        rfb = new RFB(screen, `ws://127.0.0.1:${port}`, { shared: true });
+      } catch (_) {
+        if (attempts < 12) setTimeout(connect, 150);
+        else note.textContent = 'Could not open the desktop stream';
+        return;
+      }
+      rfb.clipViewport = false;
+      const quality = Number(params.get('quality'));
+      if (Number.isInteger(quality)) rfb.qualityLevel = quality;
+      const compress = Number(params.get('compress'));
+      if (params.get('compress') && Number.isInteger(compress)) rfb.compressionLevel = compress;
+      fit();
+      rfb.addEventListener('connect', () => {
+        connected = true;
+        note.remove();
+        fit();
+        requestAnimationFrame(fit);
+        rfb.focus();
+      });
+      rfb.addEventListener('credentialsrequired', () => { emit('desktop-credentials-needed').catch(() => {}); });
+      rfb.addEventListener('securityfailure', event => {
+        emit('desktop-auth-failed', { reason: event.detail?.reason || 'The server rejected those credentials.' }).catch(() => {});
+      });
+      rfb.addEventListener('clipboard', event => {
+        if (params.get('accept') !== '1') return;
+        const text = event.detail?.text || '';
+        if (text) navigator.clipboard.writeText(text).catch(() => {});
+      });
+      rfb.addEventListener('disconnect', () => {
+        if (connected || attempts >= 12) return;
+        setTimeout(connect, 150);
+      });
+    }
+    function openDock() { dock.classList.add('is-open'); }
+    function closeDock() {
+      if (dock.contains(document.activeElement)) return;
+      dock.classList.remove('is-open');
+    }
+    function dockCovers(event) {
+      const box = dock.getBoundingClientRect();
+      return event.clientX >= box.left && event.clientX <= box.right && event.clientY >= box.top - 8 && event.clientY <= box.bottom + 16;
+    }
+    window.addEventListener('pointermove', event => {
+      if (event.clientY <= 72 || dockCovers(event)) openDock();
+      else closeDock();
+    }, true);
+    dock.addEventListener('focusout', () => { setTimeout(closeDock, 0); });
+    openDock();
+    setTimeout(closeDock, 1600);
+    window.addEventListener('resize', fit);
+    scaleButton.addEventListener('click', () => {
+      scale = !scale;
+      scaleButton.setAttribute('aria-pressed', String(scale));
+      fit();
+      publish();
+    });
+    viewOnlyButton.addEventListener('click', () => {
+      viewOnly = !viewOnly;
+      viewOnlyButton.setAttribute('aria-pressed', String(viewOnly));
+      fit();
+      publish();
+    });
+    resizeButton.addEventListener('click', () => {
+      remoteResize = !remoteResize;
+      resizeButton.setAttribute('aria-pressed', String(remoteResize));
+      fit();
+      publish();
+    });
+    cad.addEventListener('click', () => { if (rfb) rfb.sendCtrlAltDel(); });
+    document.getElementById('clip').addEventListener('click', () => {
+      const box = document.getElementById('clipBox');
+      const open = box.hidden;
+      box.hidden = !open;
+      document.getElementById('clip').setAttribute('aria-pressed', String(open));
+      if (open) document.getElementById('clipText').focus();
+    });
+    document.getElementById('clipSend').addEventListener('click', () => {
+      const text = document.getElementById('clipText').value;
+      if (text && rfb && sendClipboard) rfb.clipboardPasteFrom(text);
+    });
+    listen('desktop-password', event => {
+      if (!rfb) return;
+      rfb.sendCredentials({ username: event.payload?.username || params.get('user') || '', password: event.payload?.password || '' });
+    });
+    listen('desktop-viewer', event => applyOptions(event.payload));
+    listen('desktop-clipboard', event => {
+      const text = event.payload?.text || '';
+      if (text && rfb && sendClipboard) rfb.clipboardPasteFrom(text);
+    });
+    connect();
+  </script>
+</body>
+</html>

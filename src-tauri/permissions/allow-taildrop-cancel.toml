@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-taildrop-cancel"
+description = "Enables the taildrop_cancel command."
+commands.allow = ["taildrop_cancel"]

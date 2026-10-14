@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-pty-write"
+description = "Enables the pty_write command."
+commands.allow = ["pty_write"]

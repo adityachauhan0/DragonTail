@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-vnc-probe"
+description = "Enables the vnc_probe command."
+commands.allow = ["vnc_probe"]

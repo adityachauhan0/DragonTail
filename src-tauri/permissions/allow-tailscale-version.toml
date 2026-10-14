@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-tailscale-version"
+description = "Enables the tailscale_version command."
+commands.allow = ["tailscale_version"]

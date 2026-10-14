@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-vnc-tunnel-open"
+description = "Enables the vnc_tunnel_open command."
+commands.allow = ["vnc_tunnel_open"]

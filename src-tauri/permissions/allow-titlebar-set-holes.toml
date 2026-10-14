@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-titlebar-set-holes"
+description = "Enables the titlebar_set_holes command."
+commands.allow = ["titlebar_set_holes"]

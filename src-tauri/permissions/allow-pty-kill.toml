@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-pty-kill"
+description = "Enables the pty_kill command."
+commands.allow = ["pty_kill"]

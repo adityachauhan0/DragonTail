@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-taildrop-send"
+description = "Enables the taildrop_send command."
+commands.allow = ["taildrop_send"]

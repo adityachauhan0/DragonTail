@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-pref-set"
+description = "Enables the pref_set command."
+commands.allow = ["pref_set"]

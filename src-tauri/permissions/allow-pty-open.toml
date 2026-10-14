@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-pty-open"
+description = "Enables the pty_open command."
+commands.allow = ["pty_open"]

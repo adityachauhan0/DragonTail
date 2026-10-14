@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-tailnet-snapshot"
+description = "Enables the tailnet_snapshot command."
+commands.allow = ["tailnet_snapshot"]
