@@ -31,18 +31,20 @@ DragonTail 0.1.0 is an Apple silicon build.
 
 [DragonTail_0.1.0_aarch64.dmg](https://github.com/adityachauhan0/DragonTail/releases/download/v0.1.0/DragonTail_0.1.0_aarch64.dmg)
 
-Tailscale needs to be installed and logged in. The disk image is ad-hoc signed. If macOS blocks the app, right-click it and choose Open, or allow it in System Settings → Privacy & Security.
+The disk image is ad-hoc signed. If macOS blocks the app, right-click it and choose Open, or allow it in System Settings → Privacy & Security.
+
+## Prerequisites
+
+- Tailscale is installed on this Mac, and you are logged in.
+- The computer you want to view is on that tailnet, with a VNC server listening on a port.
+- DragonTail includes the viewer, and draws the desktop in the app.
 
 ## What you can do
 
 - See the computers on your tailnet
 - Ping a computer and send it a file with Taildrop
 - Open an SSH session with the `ssh` already on this Mac
-- Open a remote desktop through an SSH tunnel
-
-## Before you open it
-
-This release is for Apple silicon Macs. A desktop session needs a VNC server already running on that computer. Passwords stay out of the app unless you save them.
+- Open that computer's desktop in DragonTail
 
 ## Build
 
