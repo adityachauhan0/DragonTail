@@ -18,10 +18,10 @@
 </p>
 
 <p align="center">
-  <img src="docs/demo.gif" alt="DragonTail: the tailnet, a live desktop, and the terminal" width="1920">
+  <img src="docs/demo.gif" alt="DragonTail: the tailnet, a live desktop, and the terminal" width="960">
 </p>
 
-<p align="center">The tailnet, a live desktop, and the terminal.</p>
+<p align="center">The tailnet, a live desktop, and the terminal. <a href="docs/demo.mp4">MP4</a> · <a href="docs/demo.webm">WebM</a></p>
 
 ## Download
 
